@@ -1,0 +1,259 @@
+diff -ruNp Git-Raw-0.81.orig/Raw.xs Git-Raw-0.81/Raw.xs
+--- Git-Raw-0.81.orig/Raw.xs	2018-06-27 19:20:49.000000000 +0200
++++ Git-Raw-0.81/Raw.xs	2018-09-10 01:21:18.624697416 +0200
+@@ -2309,7 +2309,7 @@ message_prettify(class, msg, ...)
+ 		RETVAL = &PL_sv_undef;
+ 		if (rc == GIT_OK) {
+ 			RETVAL = newSVpv(buf.ptr, buf.size);
+-			git_buf_dispose(&buf);
++			git_buf_free(&buf);
+ 		}
+ 
+ 		git_check_error(rc);
+diff -ruNp Git-Raw-0.81.orig/xs/Branch.xs Git-Raw-0.81/xs/Branch.xs
+--- Git-Raw-0.81.orig/xs/Branch.xs	2018-06-27 19:20:49.000000000 +0200
++++ Git-Raw-0.81/xs/Branch.xs	2018-09-10 01:21:18.617697448 +0200
+@@ -165,7 +165,7 @@ upstream_name(self)
+ 		if (rc == GIT_OK)
+ 			RETVAL = newSVpv(buf.ptr, buf.size);
+ 
+-		git_buf_dispose(&buf);
++		git_buf_free(&buf);
+ 
+ 		if (rc != GIT_ENOTFOUND)
+ 			git_check_error(rc);
+@@ -204,8 +204,8 @@ remote_name(self)
+ 				RETVAL = newSVpv(remote.ptr, remote.size);
+ 		}
+ 
+-		git_buf_dispose(&upstream);
+-		git_buf_dispose(&remote);
++		git_buf_free(&upstream);
++		git_buf_free(&remote);
+ 
+ 		if (rc != GIT_ENOTFOUND)
+ 			git_check_error(rc);
+diff -ruNp Git-Raw-0.81.orig/xs/Commit.xs Git-Raw-0.81/xs/Commit.xs
+--- Git-Raw-0.81.orig/xs/Commit.xs	2018-06-27 19:20:49.000000000 +0200
++++ Git-Raw-0.81/xs/Commit.xs	2018-09-10 01:21:18.617697448 +0200
+@@ -468,12 +468,12 @@ as_email(commit, ...)
+ 			&diff_opts
+ 		);
+ 		if (rc != GIT_OK) {
+-			git_buf_dispose(&buf);
++			git_buf_free(&buf);
+ 			git_check_error(rc);
+ 		}
+ 
+ 		RETVAL = newSVpv(buf.ptr, buf.size);
+-		git_buf_dispose(&buf);
++		git_buf_free(&buf);
+ 
+ 	OUTPUT: RETVAL
+ 
+diff -ruNp Git-Raw-0.81.orig/xs/Config.xs Git-Raw-0.81/xs/Config.xs
+--- Git-Raw-0.81.orig/xs/Config.xs	2018-06-27 19:20:49.000000000 +0200
++++ Git-Raw-0.81/xs/Config.xs	2018-09-10 01:21:18.618697443 +0200
+@@ -118,7 +118,7 @@ str(self, name, ...)
+ 			git_check_error(rc);
+ 
+ 			RETVAL = newSVpv(buf.ptr, 0);
+-			git_buf_dispose(&buf);
++			git_buf_free(&buf);
+ 		}
+ 
+ 	OUTPUT: RETVAL
+diff -ruNp Git-Raw-0.81.orig/xs/Diff/Stats.xs Git-Raw-0.81/xs/Diff/Stats.xs
+--- Git-Raw-0.81.orig/xs/Diff/Stats.xs	2018-06-27 19:20:49.000000000 +0200
++++ Git-Raw-0.81/xs/Diff/Stats.xs	2018-09-10 01:21:18.620697434 +0200
+@@ -62,7 +62,7 @@ buffer(self, ...)
+ 
+ 		RETVAL = newSVpv(buf.ptr, buf.size);
+ 
+-		git_buf_dispose(&buf);
++		git_buf_free(&buf);
+ 
+ 	OUTPUT: RETVAL
+ 
+diff -ruNp Git-Raw-0.81.orig/xs/Diff.xs Git-Raw-0.81/xs/Diff.xs
+--- Git-Raw-0.81.orig/xs/Diff.xs	2018-06-27 19:20:49.000000000 +0200
++++ Git-Raw-0.81/xs/Diff.xs	2018-09-10 01:21:18.616697453 +0200
+@@ -51,7 +51,7 @@ buffer(self, format)
+ 
+ 		RETVAL = newSVpv(buf.ptr, buf.size);
+ 
+-		git_buf_dispose(&buf);
++		git_buf_free(&buf);
+ 
+ 	OUTPUT: RETVAL
+ 
+diff -ruNp Git-Raw-0.81.orig/xs/Filter/List.xs Git-Raw-0.81/xs/Filter/List.xs
+--- Git-Raw-0.81.orig/xs/Filter/List.xs	2018-06-27 19:20:49.000000000 +0200
++++ Git-Raw-0.81/xs/Filter/List.xs	2018-09-10 01:21:18.621697430 +0200
+@@ -62,11 +62,11 @@ apply_to_blob(self, blob)
+ 			&buf, self, blob
+ 		);
+ 		if (rc != GIT_OK)
+-			git_buf_dispose(&buf);
++			git_buf_free(&buf);
+ 
+ 		git_check_error(rc);
+ 		RETVAL = newSVpv(buf.ptr, buf.size);
+-		git_buf_dispose(&buf);
++		git_buf_free(&buf);
+ 
+ 	OUTPUT: RETVAL
+ 
+@@ -94,16 +94,16 @@ apply_to_data(self, data)
+ 			&buf, self, &in
+ 		);
+ 		if (rc != GIT_OK) {
+-			git_buf_dispose(&in);
+-			git_buf_dispose(&buf);
++			git_buf_free(&in);
++			git_buf_free(&buf);
+ 		}
+ 
+ 		git_check_error(rc);
+ 
+ 		RETVAL = newSVpv(buf.ptr, buf.size);
+ 
+-		git_buf_dispose(&in);
+-		git_buf_dispose(&buf);
++		git_buf_free(&in);
++		git_buf_free(&buf);
+ 
+ 	OUTPUT: RETVAL
+ 
+@@ -131,11 +131,11 @@ apply_to_file(self, path)
+ 			&buf, list, repo_ptr -> repository, path
+ 		);
+ 		if (rc != GIT_OK)
+-			git_buf_dispose(&buf);
++			git_buf_free(&buf);
+ 
+ 		git_check_error(rc);
+ 		RETVAL = newSVpv(buf.ptr, buf.size);
+-		git_buf_dispose(&buf);
++		git_buf_free(&buf);
+ 
+ 	OUTPUT: RETVAL
+ 
+diff -ruNp Git-Raw-0.81.orig/xs/Mempack.xs Git-Raw-0.81/xs/Mempack.xs
+--- Git-Raw-0.81.orig/xs/Mempack.xs	2018-06-27 19:20:49.000000000 +0200
++++ Git-Raw-0.81/xs/Mempack.xs	2018-09-10 01:21:18.619697439 +0200
+@@ -38,7 +38,7 @@ dump(self, repo)
+ 
+ 		RETVAL = newSVpv(buf.ptr, buf.size);
+ 
+-		git_buf_dispose(&buf);
++		git_buf_free(&buf);
+ 
+ 	OUTPUT: RETVAL
+ 
+diff -ruNp Git-Raw-0.81.orig/xs/Note.xs Git-Raw-0.81/xs/Note.xs
+--- Git-Raw-0.81.orig/xs/Note.xs	2018-06-27 19:20:49.000000000 +0200
++++ Git-Raw-0.81/xs/Note.xs	2018-09-10 01:21:18.615697457 +0200
+@@ -196,7 +196,7 @@ default_ref(class, repo)
+ 		rc = git_reference_lookup(
+ 			&ref, repo_ptr -> repository, ref_name.ptr
+ 		);
+-		git_buf_dispose(&ref_name);
++		git_buf_free(&ref_name);
+ 
+ 		RETVAL = &PL_sv_undef;
+ 		if (rc != GIT_ENOTFOUND) {
+diff -ruNp Git-Raw-0.81.orig/xs/Patch.xs Git-Raw-0.81/xs/Patch.xs
+--- Git-Raw-0.81.orig/xs/Patch.xs	2018-06-27 19:20:49.000000000 +0200
++++ Git-Raw-0.81/xs/Patch.xs	2018-09-10 01:21:18.616697453 +0200
+@@ -15,7 +15,7 @@ buffer(self)
+ 
+ 		RETVAL = newSVpv(buf.ptr, buf.size);
+ 
+-		git_buf_dispose(&buf);
++		git_buf_free(&buf);
+ 
+ 	OUTPUT: RETVAL
+ 
+diff -ruNp Git-Raw-0.81.orig/xs/RefSpec.xs Git-Raw-0.81/xs/RefSpec.xs
+--- Git-Raw-0.81.orig/xs/RefSpec.xs	2018-06-27 19:20:49.000000000 +0200
++++ Git-Raw-0.81/xs/RefSpec.xs	2018-09-10 01:21:18.619697439 +0200
+@@ -95,7 +95,7 @@ transform(self, ref)
+ 		if (rc == GIT_OK)
+ 			RETVAL = newSVpv(buf.ptr, buf.size);
+ 
+-		git_buf_dispose(&buf);
++		git_buf_free(&buf);
+ 		git_check_error(rc);
+ 
+ 	OUTPUT: RETVAL
+@@ -120,7 +120,7 @@ rtransform(self, ref)
+ 		if (rc == GIT_OK)
+ 			RETVAL = newSVpv(buf.ptr, buf.size);
+ 
+-		git_buf_dispose(&buf);
++		git_buf_free(&buf);
+ 		git_check_error(rc);
+ 
+ 	OUTPUT: RETVAL
+diff -ruNp Git-Raw-0.81.orig/xs/Remote.xs Git-Raw-0.81/xs/Remote.xs
+--- Git-Raw-0.81.orig/xs/Remote.xs	2018-06-27 19:20:49.000000000 +0200
++++ Git-Raw-0.81/xs/Remote.xs	2018-09-10 01:21:18.618697443 +0200
+@@ -155,13 +155,13 @@ default_branch(self)
+ 			RETVAL = &PL_sv_undef;
+ 		} else {
+ 			if (rc != GIT_OK)
+-				git_buf_dispose(&buf);
++				git_buf_free(&buf);
+ 
+ 			git_check_error(rc);
+ 			RETVAL = newSVpv(buf.ptr, buf.size);
+ 		}
+ 
+-		git_buf_dispose(&buf);
++		git_buf_free(&buf);
+ 
+ 	OUTPUT: RETVAL
+ 
+diff -ruNp Git-Raw-0.81.orig/xs/Repository.xs Git-Raw-0.81/xs/Repository.xs
+--- Git-Raw-0.81.orig/xs/Repository.xs	2018-06-27 19:20:49.000000000 +0200
++++ Git-Raw-0.81/xs/Repository.xs	2018-09-10 01:21:18.621697430 +0200
+@@ -123,7 +123,7 @@ discover(class, path)
+ 		if (rc == GIT_OK)
+ 			rc = git_repository_open(&r, (const char*) buf.ptr);
+ 
+-		git_buf_dispose(&buf);
++		git_buf_free(&buf);
+ 		git_check_error(rc);
+ 
+ 		Newxz(repo, 1, git_raw_repository);
+@@ -1198,7 +1198,7 @@ message(self)
+ 		if (rc == GIT_OK)
+ 			RETVAL = newSVpv(buf.ptr, 0);
+ 
+-		git_buf_dispose(&buf);
++		git_buf_free(&buf);
+ 		git_check_error(rc);
+ 
+ 	OUTPUT: RETVAL
+diff -ruNp Git-Raw-0.81.orig/xs/Worktree.xs Git-Raw-0.81/xs/Worktree.xs
+--- Git-Raw-0.81.orig/xs/Worktree.xs	2018-06-27 19:20:49.000000000 +0200
++++ Git-Raw-0.81/xs/Worktree.xs	2018-09-10 01:21:18.619697439 +0200
+@@ -117,7 +117,7 @@ is_locked(self)
+ 	PPCODE:
+ 		rc = git_worktree_is_locked(&buf, self);
+ 		if (rc < 0) {
+-			git_buf_dispose(&buf);
++			git_buf_free(&buf);
+ 			git_check_error(rc);
+ 		}
+ 
+@@ -126,7 +126,7 @@ is_locked(self)
+ 		else
+ 			mXPUSHi (0);
+ 
+-		git_buf_dispose(&buf);
++		git_buf_free(&buf);
+ 		XSRETURN(1);
+ 
+ void
