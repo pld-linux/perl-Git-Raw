@@ -6,7 +6,6 @@
 
 %define	pdir	Git
 %define	pnam	Raw
-%include	/usr/lib/rpm/macros.perl
 Summary:	Git::Raw - Perl bindings to the Git linkable library (libgit2)
 Name:		perl-Git-Raw
 Version:	0.81
