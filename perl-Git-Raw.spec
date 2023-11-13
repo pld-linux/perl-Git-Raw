@@ -8,13 +8,13 @@
 %define	pnam	Raw
 Summary:	Git::Raw - Perl bindings to the Git linkable library (libgit2)
 Name:		perl-Git-Raw
-Version:	0.81
+Version:	0.90
 Release:	1
 # same as perl
 License:	GPL v1+ or Artistic
 Group:		Development/Languages/Perl
 Source0:	http://www.cpan.org/modules/by-authors/id/J/JA/JACQUESG/%{pdir}-%{pnam}-%{version}.tar.gz
-# Source0-md5:	06dec64a5e684958c3cd71bb30872ddf
+# Source0-md5:	1ef1bd947245e86c60458a22fbf097b7
 Patch0:		%{name}-Makefile.patch
 Patch1:		%{name}-git_buf_dispose.patch
 URL:		http://search.cpan.org/dist/Git-Raw/
